@@ -1,0 +1,10 @@
+import type { Category } from '@/domain/category/category.entity'
+
+export abstract class CategoriesRepository {
+  abstract findAll(): Promise<Category[]>
+  abstract findByName(name: string): Promise<Category | null>
+  abstract findById(id: string): Promise<Category | null>
+  abstract save(category: Category): Promise<void>
+  abstract delete(category: Category): Promise<void>
+  abstract update(category: Category): Promise<void>
+}
