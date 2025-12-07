@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import type { CategoriesRepository } from '../repositories/categories.repository'
+import { CategoriesRepository } from '../repositories/categories.repository'
 
 interface UpdateCategoryInput {
   id: string

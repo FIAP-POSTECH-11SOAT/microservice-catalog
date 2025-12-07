@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 
 import { envSchema } from './infra/env/env'
 import { EnvModule } from './infra/env/env.module'
-import { HttpModule } from './infra/http/controllers/http.module'
+import { HttpModule } from './infra/http/http.module'
 
 @Module({
   imports: [

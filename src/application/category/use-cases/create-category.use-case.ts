@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Category } from '@/domain/category/category.entity'
-import type { CategoriesRepository } from '../repositories/categories.repository'
+import { CategoriesRepository } from '../repositories/categories.repository'
 
 @Injectable()
 export class CreateCategoryUseCase {

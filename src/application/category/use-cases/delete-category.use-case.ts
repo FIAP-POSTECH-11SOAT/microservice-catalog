@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import type { ItemsRepository } from '@/application/item/repositories/items.repository'
-import type { CategoriesRepository } from '../repositories/categories.repository'
+import { ItemsRepository } from '@/application/item/repositories/items.repository'
+import { CategoriesRepository } from '../repositories/categories.repository'
 
 @Injectable()
 export class DeleteCategoryUseCase {
