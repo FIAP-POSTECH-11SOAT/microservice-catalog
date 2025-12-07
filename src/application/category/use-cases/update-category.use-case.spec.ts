@@ -1,7 +1,7 @@
 import { UniqueEntityID } from 'src/shared/entities/unique-entity-id'
 import { makeCategory } from 'test/factories/make-category'
 import { InMemoryCategoriesRepository } from '@/infra/database/in-memory/in-memory-categories.repository'
-import { UpdateCategoryUseCase } from './update-category.service'
+import { UpdateCategoryUseCase } from './update-category.use-case'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let sut: UpdateCategoryUseCase

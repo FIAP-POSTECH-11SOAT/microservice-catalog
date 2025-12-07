@@ -1,7 +1,7 @@
 import { UniqueEntityID } from 'src/shared/entities/unique-entity-id'
 import { makeCategory } from 'test/factories/make-category'
 import { InMemoryCategoriesRepository } from '@/infra/database/in-memory/in-memory-categories.repository'
-import { CreateCategoryUseCase } from './create-category.service'
+import { CreateCategoryUseCase } from './create-category.use-case'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let sut: CreateCategoryUseCase
@@ -30,6 +30,6 @@ describe('Crate Category Use Case', () => {
   it('should not be able to create a category with the same name', async () => {
     await sut.execute({ name: 'Category 1' })
 
-    expect(() => sut.execute({ name: 'Category 1' })).rejects.toThrow(new Error('Category already exists'))
+    await expect(() => sut.execute({ name: 'Category 1' })).rejects.toThrow(new Error('Category already exists'))
   })
 })

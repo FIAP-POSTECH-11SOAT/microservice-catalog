@@ -16,6 +16,14 @@ export type CreateCategoryProps = {
   deletedAt?: Date | null
 }
 
+export type RestoreCategoryProps = {
+  id: string
+  name: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date | null
+}
+
 export class Category {
   private _id: UniqueEntityID
   private props: CategoryProps
@@ -64,6 +72,19 @@ export class Category {
         deletedAt: props.deletedAt ?? null,
       },
       props.id ? new UniqueEntityID(props.id) : new UniqueEntityID()
+    )
+    return category
+  }
+
+  static restore(props: RestoreCategoryProps): Category {
+    const category = new Category(
+      {
+        name: ValidString.create(props.name),
+        createdAt: props.createdAt,
+        updatedAt: props.updatedAt,
+        deletedAt: props.deletedAt ?? null,
+      },
+      new UniqueEntityID(props.id)
     )
     return category
   }

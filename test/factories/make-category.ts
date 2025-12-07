@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityID } from 'src/shared/entities/unique-entity-id'
 import { Category, type CreateCategoryProps } from '@/domain/category/category.entity'
@@ -7,7 +7,7 @@ import type { PrismaService } from '@/infra/database/prisma/prisma.service'
 export function makeCategory(override: Partial<CreateCategoryProps> = {}, id?: UniqueEntityID) {
   const category = Category.create({
     id: id ? id.toString() : new UniqueEntityID().toString(),
-    name: randomUUID(),
+    name: faker.commerce.productMaterial(),
     createdAt: new Date(),
     updatedAt: new Date(),
     ...override,
