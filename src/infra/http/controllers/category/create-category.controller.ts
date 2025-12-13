@@ -25,7 +25,7 @@ export class CreateCategoryController {
     return applyDecorators(
       ApiOperation({
         summary: 'Create new category',
-        description: 'This endpoint allows you to create an category.',
+        description: 'This endpoint allows you to create a category.',
       }),
       ApiResponse({ status: 201, description: 'Created' }),
       ApiResponse({ status: 400, description: 'Bad Request' }),

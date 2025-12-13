@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import type { CategoriesRepository } from '@/application/category/repositories/categories.repository'
+import { CategoriesRepository } from '@/application/category/repositories/categories.repository'
 import { type CreateItemProps, Item } from '@/domain/item/item.entity'
-import type { ItemsRepository } from '../repositories/items.repository'
+import { CacheRepository } from '@/infra/cache/redis/redis.repository'
+import { ItemsRepository } from '../repositories/items.repository'
+import { ItemsCacheKeys } from '../repositories/items-cache-keys'
 
 @Injectable()
 export class CreateItemUseCase {
   constructor(
-    private itemsRepository: ItemsRepository,
-    private categoriesRepository: CategoriesRepository
+    private readonly itemsRepository: ItemsRepository,
+    private readonly categoriesRepository: CategoriesRepository,
+    private readonly cache: CacheRepository
   ) {}
 
   async execute(createItem: CreateItemProps): Promise<Item> {
@@ -19,6 +22,9 @@ export class CreateItemUseCase {
 
     const newItem = Item.create(createItem)
     await this.itemsRepository.save(newItem)
+
+    await this.cache.del(ItemsCacheKeys.itemsAll())
+    await this.cache.del(ItemsCacheKeys.itemsByCategory(createItem.categoryId))
 
     return newItem
   }

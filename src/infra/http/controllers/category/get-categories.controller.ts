@@ -1,4 +1,4 @@
-import { applyDecorators, Controller, Get, HttpCode } from '@nestjs/common'
+import { applyDecorators, Controller, Get, HttpCode, UnprocessableEntityException } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { GetCategoriesUseCase } from '@/application/category/use-cases/get-categories.use-case'
 import { CategoryPresenter } from '../../presenters/category-presenter'
@@ -13,10 +13,14 @@ export class GetCategoriesController {
   @HttpCode(200)
   @GetCategoriesController.swagger()
   async handle() {
-    const result = await this.getCategoriesUseCase.execute()
-    const categories = result.map(CategoryPresenter.toHTTP)
-    return {
-      categories,
+    try {
+      const result = await this.getCategoriesUseCase.execute()
+      const categories = result.map(CategoryPresenter.toHTTP)
+      return {
+        categories,
+      }
+    } catch (error) {
+      throw new UnprocessableEntityException(error.message)
     }
   }
 

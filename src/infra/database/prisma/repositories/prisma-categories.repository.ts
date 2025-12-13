@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import type { CategoriesRepository } from '@/application/category/repositories/categories.repository'
+import { CategoriesRepository } from '@/application/category/repositories/categories.repository'
 import type { Category } from '@/domain/category/category.entity'
 import { PrismaCategoryMapper } from '../mappers/prisma-categories.mapper'
 import { PrismaService } from '../prisma.service'

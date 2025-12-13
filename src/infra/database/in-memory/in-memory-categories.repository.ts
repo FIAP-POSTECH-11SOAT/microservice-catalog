@@ -1,4 +1,4 @@
-import type { CategoriesRepository } from '@/application/category/repositories/categories.repository'
+import { CategoriesRepository } from '@/application/category/repositories/categories.repository'
 import type { Category } from '@/domain/category/category.entity'
 
 export class InMemoryCategoriesRepository implements CategoriesRepository {

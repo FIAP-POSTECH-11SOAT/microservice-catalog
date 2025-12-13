@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import type { ItemsRepository } from '@/application/item/repositories/items.repository'
+import { ItemsRepository } from '@/application/item/repositories/items.repository'
 import type { Item } from '@/domain/item/item.entity'
 import PrismaItemsMapper from '../mappers/prisma-items.mapper'
 import { PrismaService } from '../prisma.service'

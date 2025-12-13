@@ -1,4 +1,4 @@
-import type { ItemsRepository } from '@/application/item/repositories/items.repository'
+import { ItemsRepository } from '@/application/item/repositories/items.repository'
 import type { Item } from '@/domain/item/item.entity'
 
 export class InMemoryItemsRepository implements ItemsRepository {

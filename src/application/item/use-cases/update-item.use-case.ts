@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import type { CategoriesRepository } from '@/application/category/repositories/categories.repository'
+import { CategoriesRepository } from '@/application/category/repositories/categories.repository'
 import type { Item } from '@/domain/item/item.entity'
-import type { ItemsRepository } from '../repositories/items.repository'
+import { CacheRepository } from '@/infra/cache/redis/redis.repository'
+import { ItemsRepository } from '../repositories/items.repository'
+import { ItemsCacheKeys } from '../repositories/items-cache-keys'
 
 export interface UpdateItemInput {
   id: string
@@ -15,8 +17,9 @@ export interface UpdateItemInput {
 @Injectable()
 export class UpdateItemUseCase {
   constructor(
-    private itemsRepository: ItemsRepository,
-    private categoriesRepository: CategoriesRepository
+    private readonly itemsRepository: ItemsRepository,
+    private readonly categoriesRepository: CategoriesRepository,
+    private readonly cache: CacheRepository
   ) {}
 
   async execute(input: UpdateItemInput): Promise<Item> {
@@ -51,6 +54,10 @@ export class UpdateItemUseCase {
     })
 
     await this.itemsRepository.update(item)
+
+    await this.cache.del(ItemsCacheKeys.itemById(id))
+    await this.cache.del(ItemsCacheKeys.itemsAll())
+    await this.cache.del(ItemsCacheKeys.itemsByCategory(item.categoryId))
 
     return item
   }
