@@ -39,7 +39,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy, CacheReposit
     const payload = JSON.stringify(value)
 
     if (ttlSeconds && ttlSeconds > 0) {
-      await this.client.set(key, payload, { EX: ttlSeconds })
+      await this.client.set(key, payload, {
+        expiration: {
+          type: 'EX',
+          value: ttlSeconds,
+        },
+      })
+
       return
     }
 

@@ -37,6 +37,14 @@ describe('Category Entity', () => {
     expect(category.deletedAt).toBeDefined()
   })
 
+  it('should throw an error when name is empty', () => {
+    const category = Category.create(createCategoryProps)
+
+    expect(() => {
+      category.name = ''
+    }).toThrow(new Error('Name is required'))
+  })
+
   it('should throw an error when softDelete is called on an already deleted category', () => {
     const category = Category.create(createCategoryProps)
     category.softDelete()

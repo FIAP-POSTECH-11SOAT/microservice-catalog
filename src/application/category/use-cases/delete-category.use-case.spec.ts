@@ -29,7 +29,7 @@ describe('Soft Delete Category Use Case', () => {
 
   it('should not be able to delete non-existent category', async () => {
     const id = 'non-existing-id'
-    expect(() => sut.execute(id)).rejects.toThrow(new Error('Category not found'))
+    await expect(() => sut.execute(id)).rejects.toThrow(new Error('Category not found'))
   })
 
   it('should throw an error if category has already been deleted', async () => {
@@ -38,7 +38,7 @@ describe('Soft Delete Category Use Case', () => {
 
     await sut.execute(category.id)
 
-    expect(() => sut.execute(category.id)).rejects.toThrow(new Error('Category already deleted'))
+    await expect(() => sut.execute(category.id)).rejects.toThrow(new Error('Category already deleted'))
   })
 
   it('should throw an error if category has active items', async () => {

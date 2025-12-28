@@ -1,14 +1,17 @@
 import { makeItem } from 'test/factories/make-item'
+import { InMemoryCacheRepository } from '@/infra/cache/in-memory/in-memory-cache.repository'
 import { InMemoryItemsRepository } from '@/infra/database/in-memory/in-memory-items.repository'
 import { DeleteItemUseCase } from './delete-item.use-case'
 
 let inMemoryItemsRepository: InMemoryItemsRepository
+let inMemoryCacheRepository: InMemoryCacheRepository
 let sut: DeleteItemUseCase
 
 describe('Delete Item Use Case', () => {
   beforeEach(() => {
     inMemoryItemsRepository = new InMemoryItemsRepository()
-    sut = new DeleteItemUseCase(inMemoryItemsRepository)
+    inMemoryCacheRepository = new InMemoryCacheRepository()
+    sut = new DeleteItemUseCase(inMemoryItemsRepository, inMemoryCacheRepository)
   })
 
   it('should delete an item', async () => {

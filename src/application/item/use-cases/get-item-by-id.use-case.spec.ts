@@ -1,14 +1,17 @@
 import { makeItem } from 'test/factories/make-item'
+import { InMemoryCacheRepository } from '@/infra/cache/in-memory/in-memory-cache.repository'
 import { InMemoryItemsRepository } from '@/infra/database/in-memory/in-memory-items.repository'
 import { GetItemByIdUseCase } from './get-item-by-id.use-case'
 
 let inMemoryItemsRepository: InMemoryItemsRepository
+let inMemoryCacheRepository: InMemoryCacheRepository
 let sut: GetItemByIdUseCase
 
 describe('Get Item by ID Use Case', () => {
   beforeEach(() => {
     inMemoryItemsRepository = new InMemoryItemsRepository()
-    sut = new GetItemByIdUseCase(inMemoryItemsRepository)
+    inMemoryCacheRepository = new InMemoryCacheRepository()
+    sut = new GetItemByIdUseCase(inMemoryItemsRepository, inMemoryCacheRepository)
   })
 
   it('should get an item by id', async () => {

@@ -1,18 +1,21 @@
 import { makeCategory } from 'test/factories/make-category'
 import { makeItem } from 'test/factories/make-item'
+import { InMemoryCacheRepository } from '@/infra/cache/in-memory/in-memory-cache.repository'
 import { InMemoryCategoriesRepository } from '@/infra/database/in-memory/in-memory-categories.repository'
 import { InMemoryItemsRepository } from '@/infra/database/in-memory/in-memory-items.repository'
 import { type UpdateItemInput, UpdateItemUseCase } from './update-item.use-case'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryItemsRepository: InMemoryItemsRepository
+let inMemoryCacheRepository: InMemoryCacheRepository
 let sut: UpdateItemUseCase
 
 describe('Update Item Use Case', () => {
   beforeEach(() => {
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryItemsRepository = new InMemoryItemsRepository()
-    sut = new UpdateItemUseCase(inMemoryItemsRepository, inMemoryCategoriesRepository)
+    inMemoryCacheRepository = new InMemoryCacheRepository()
+    sut = new UpdateItemUseCase(inMemoryItemsRepository, inMemoryCategoriesRepository, inMemoryCacheRepository)
   })
 
   it('should update an item', async () => {

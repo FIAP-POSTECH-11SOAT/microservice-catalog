@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     root: './',
     coverage: {
-      exclude: [...configDefaults.exclude, 'test/**/*', '**/main.ts', '**/*.module.ts', '**/types/**'],
+      exclude: [...configDefaults.exclude, 'test/**/*', '**/main.ts', '**/*.module.ts', '**/types/**', 'src/infra/env/**'],
     },
   },
   plugins: [tsConfigPaths()],

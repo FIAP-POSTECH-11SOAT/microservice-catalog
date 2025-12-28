@@ -1,14 +1,17 @@
 import { makeItem } from 'test/factories/make-item'
+import { InMemoryCacheRepository } from '@/infra/cache/in-memory/in-memory-cache.repository'
 import { InMemoryItemsRepository } from '@/infra/database/in-memory/in-memory-items.repository'
 import { GetItemsUseCase } from './get-items.use-case'
 
 let inMemoryItemsRepository: InMemoryItemsRepository
+let inMemoryCacheRepository: InMemoryCacheRepository
 let sut: GetItemsUseCase
 
 describe('GetItemsService', () => {
   beforeEach(() => {
     inMemoryItemsRepository = new InMemoryItemsRepository()
-    sut = new GetItemsUseCase(inMemoryItemsRepository)
+    inMemoryCacheRepository = new InMemoryCacheRepository()
+    sut = new GetItemsUseCase(inMemoryItemsRepository, inMemoryCacheRepository)
   })
 
   it('should get items', async () => {

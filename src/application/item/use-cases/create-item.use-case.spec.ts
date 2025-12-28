@@ -1,19 +1,22 @@
 import { makeCategory } from 'test/factories/make-category'
 import { makeItem } from 'test/factories/make-item'
 import { Category } from '@/domain/category/category.entity'
+import { InMemoryCacheRepository } from '@/infra/cache/in-memory/in-memory-cache.repository'
 import { InMemoryCategoriesRepository } from '@/infra/database/in-memory/in-memory-categories.repository'
 import { InMemoryItemsRepository } from '@/infra/database/in-memory/in-memory-items.repository'
 import { CreateItemUseCase } from './create-item.use-case'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryItemsRepository: InMemoryItemsRepository
+let inMemoryCacheRepository: InMemoryCacheRepository
 let sut: CreateItemUseCase
 
 describe('Create Item Use Case', () => {
   beforeEach(() => {
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryItemsRepository = new InMemoryItemsRepository()
-    sut = new CreateItemUseCase(inMemoryItemsRepository, inMemoryCategoriesRepository)
+    inMemoryCacheRepository = new InMemoryCacheRepository()
+    sut = new CreateItemUseCase(inMemoryItemsRepository, inMemoryCategoriesRepository, inMemoryCacheRepository)
   })
 
   it('should create an item', async () => {
