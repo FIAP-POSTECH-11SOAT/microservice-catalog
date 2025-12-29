@@ -16,15 +16,17 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm run test
 
   build:
+    # if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -34,28 +36,29 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
 
       - name: Build
         run: npm run build
 
-      - name: Build Docker image
-        if: github.ref == 'refs/heads/main'
-        run: docker build -t app:latest .
+      # - name: Build Docker image
+      #   run: docker build -t app:latest .
 
-      - name: Save Docker image
-        if: github.ref == 'refs/heads/main'
-        run: docker save app:latest -o image.tar
+      # - name: Save Docker image
+      #   run: docker save app:latest -o image.tar
 
-      - name: Upload Docker image
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
-        with:
-          name: image
-          path: image.tar
+      # - name: Upload Docker image
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: image
+      #     path: image.tar
 
   # deploy:
   #   if: github.ref == 'refs/heads/main'
