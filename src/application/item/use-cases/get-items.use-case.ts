@@ -18,7 +18,6 @@ export class GetItemsUseCase {
     const key = ItemsCacheKeys.itemsAll()
     const cached = await this.cache.get<Item[]>(key)
     if (cached) return cached
-    console.log('db')
 
     const items = await this.itemsRepository.findAll()
     await this.cache.set(key, items.map(ItemMapper.toDTO), this.TTL_SECONDS)
