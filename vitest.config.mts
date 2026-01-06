@@ -6,6 +6,9 @@ export default defineConfig({
     globals: true,
     root: './',
     coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './coverage',
       exclude: [...configDefaults.exclude, 'test/**/*', '**/main.ts', '**/*.module.ts', '**/types/**', 'src/infra/env/**'],
     },
   },
