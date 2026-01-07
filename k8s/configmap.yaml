@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rms-catalog-config
+data:
+  NODE_ENV: "development"
+  APP_PORT: "3002"
