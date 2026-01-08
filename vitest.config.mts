@@ -9,7 +9,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
-      exclude: [...configDefaults.exclude, 'test/**/*', '**/main.ts', '**/*.module.ts', '**/types/**', 'src/infra/env/**'],
+      exclude: [...configDefaults.exclude, 'test/**/*', '**/main.ts', '**/*.module.ts', '**/types/**', 'src/infra/env/**', 'src/infra/database/prisma/mappers/**'],
     },
   },
   plugins: [tsConfigPaths()],
