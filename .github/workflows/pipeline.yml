@@ -28,11 +28,13 @@ jobs:
 
   #     - name: Run tests
   #       run: npm run test
-
   build-and-push:
     name: Build and Push
     runs-on: ubuntu-latest
-    environment: main
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/api
 
     steps:
       - name: Checkout repository
@@ -55,7 +57,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }} .
+          docker build --build-arg DATABASE_URL='${{ env.DATABASE_URL }}' -t ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }} .
           docker tag ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }} ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
 
       - name: Push Docker image to ECR
