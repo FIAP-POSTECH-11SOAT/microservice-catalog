@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: rms-catalog
-          image: XXX
+          image: 844787492624.dkr.ecr.us-east-1.amazonaws.com/rms-tc4-iac/rmscatalog:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3002

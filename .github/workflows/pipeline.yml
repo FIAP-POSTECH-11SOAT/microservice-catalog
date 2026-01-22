@@ -65,17 +65,17 @@ jobs:
           docker push ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }}
           docker push ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
 
-      # - name: Criar arquivo kubeconfig
-      #   # https://docs.aws.amazon.com/pt_br/eks/latest/userguide/create-kubeconfig.html
-      #   run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Criar arquivo kubeconfig
+        # https://docs.aws.amazon.com/pt_br/eks/latest/userguide/create-kubeconfig.html
+        run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
-      # - name: kubectl-apply
-      #   # A ordem dos arquivos importa no Kubernetes
-      #   run: |
-      #     kubectl apply \
-      #     -f k8s/namespace.yaml \
-      #     -f k8s/configmap.yaml \
-      #     -f k8s/secrets.yaml \
-      #     -f k8s/deployment.yaml \
-      #     -f k8s/service.yaml \
-      #     -f k8s/hpa.yaml
+      - name: kubectl-apply
+        # A ordem dos arquivos importa no Kubernetes
+        run: |
+          kubectl apply \
+          -f k8s/namespace.yaml \
+          -f k8s/configmap.yaml \
+          -f k8s/secrets.yaml \
+          -f k8s/deployment.yaml \
+          -f k8s/service.yaml \
+          -f k8s/hpa.yaml
