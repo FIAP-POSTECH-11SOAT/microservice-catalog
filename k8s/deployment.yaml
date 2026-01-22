@@ -38,14 +38,9 @@ spec:
                   key: REDIS_URL
             - name: PORT
               valueFrom:
-                configMapKeyRef:
-                  name: rms-catalog-config
-                  key: APP_PORT
-            - name: NODE_ENV
-              valueFrom:
-                configMapKeyRef:
-                  name: rms-catalog-config
-                  key: NODE_ENV
+                secretKeyRef:
+                  name: rms-catalog-secrets
+                  key: PORT
           resources:
             requests:
               memory: '250Mi'
