@@ -1,7 +1,8 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: rms-catalog
+  name: rms-catalog-hpa
+  namespace: rms-catalog
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
