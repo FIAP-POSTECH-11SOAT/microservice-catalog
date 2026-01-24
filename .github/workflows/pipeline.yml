@@ -6,113 +6,77 @@ on:
   pull_request:
     branches: [main, development]
 
+concurrency:
+  group: build-push-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 22
+  #         cache: 'npm'
+
+  #     - name: Install dependencies
+  #       run: npm ci
+
+  #     - name: Run tests
+  #       run: npm run test
+
+  build-and-push:
+    name: Build and Push
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test
-  
-  sonarqube:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: SonarSource/sonarqube-quality-gate-action@v1
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  build:
-    # if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: test
-    environment: main
 
     env:
       NODE_ENV: test
-      DATABASE_URL: ppostgresql://postgres:postgres@localhost:5432/api
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/api
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Generate SHA
+        id: generate_sha
+        run: echo "sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS Credentials (Static Keys)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          node-version: 22
-          cache: 'npm'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Login into the container registry
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Generate Prisma client
-        run: npx prisma generate
+      - name: Build Docker image
+        run: |
+          docker build --build-arg DATABASE_URL='${{ env.DATABASE_URL }}' -t ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }} .
+          docker tag ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }} ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
 
-      - name: Build
-        run: npm run build
+      - name: Push Docker image to ECR
+        run: |
+          docker push ${{ secrets.AWS_ECR_REPOSITORY_URI }}:${{ steps.generate_sha.outputs.sha }}
+          docker push ${{ secrets.AWS_ECR_REPOSITORY_URI }}:latest
 
-      # - name: Build Docker image
-      #   run: docker build -t app:latest .
+      - name: Criar arquivo kubeconfig
+        # https://docs.aws.amazon.com/pt_br/eks/latest/userguide/create-kubeconfig.html
+        run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
-      # - name: Save Docker image
-      #   run: docker save app:latest -o image.tar
-
-      # - name: Upload Docker image
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: image
-      #     path: image.tar
-
-  # deploy:
-  #   if: github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Download Docker image
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: image
-
-  #     - name: Load Docker image
-  #       run: docker load -i image.tar
-
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v3
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-  #         aws-region: ${{ secrets.AWS_REGION }}
-
-  #     - name: Login to Amazon ECR
-  #       id: login-ecr
-  #       uses: aws-actions/amazon-ecr-login@v2
-
-  #     - name: Tag and push image to Amazon ECR
-  #       env:
-  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-  #         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  #         IMAGE_TAG: ${{ github.sha }}
-  #       run: |
-  #         docker tag app:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-  #         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: kubectl-apply
+        # A ordem dos arquivos importa no Kubernetes
+        run: |
+          kubectl apply \
+          -f k8s/namespace.yaml \
+          -f k8s/configmap.yaml \
+          -f k8s/secrets.yaml \
+          -f k8s/deployment.yaml \
+          -f k8s/service.yaml \
+          -f k8s/hpa.yaml
